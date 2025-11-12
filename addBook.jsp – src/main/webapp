@@ -1,0 +1,47 @@
+<!—Kritika’s Java Assignment -->
+<%@ page import="java.sql.*" %>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Add Book</title>
+</head>
+<body>
+<h2>Add New Book</h2>
+
+<form method="post">
+  Title: <input type="text" name="title" required><br><br>
+  Author: <input type="text" name="author" required><br><br>
+  Price: <input type="text" name="price" required><br><br>
+  <input type="submit" value="Add Book">
+</form>
+<br>
+<a href="viewBooks.jsp">View All Books</a>
+
+<%
+String title = request.getParameter("title");
+String author = request.getParameter("author");
+String priceStr = request.getParameter("price");
+
+if(title != null && author != null && priceStr != null){
+    double price = Double.parseDouble(priceStr);
+    try{
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        Connection con = DriverManager.getConnection(
+            "jdbc:mysql://localhost:3306/bookhub_db","root","123456");
+
+        PreparedStatement ps = con.prepareStatement(
+            "INSERT INTO book(title,author,price) VALUES(?,?,?)");
+        ps.setString(1, title);
+        ps.setString(2, author);
+        ps.setDouble(3, price);
+        ps.executeUpdate();
+        con.close();
+
+        out.println("<p style='color:green'>Book added successfully!</p>");
+    }catch(Exception e){
+        out.println("<p style='color:red'>Error: "+e.getMessage()+"</p>");
+    }
+}
+%>
+</body>
+</html>
